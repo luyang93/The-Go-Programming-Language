@@ -4,49 +4,59 @@ package main
 import (
 	"fmt"
 	"io"
+	"io/ioutil"
 	"net/http"
 	"os"
-	"strconv"
+	"os/signal"
 	"time"
 )
 
 var stdout io.Writer = os.Stdout
 var stderr io.Writer = os.Stderr
-var fileCount = 0
-
-const fileBase = "fetch_test_result_"
-const fileExt = ".html"
+var done = make(chan struct{})
 
 func main() {
 	start := time.Now()
 	ch := make(chan string)
-	for i, url := range os.Args[1:] {
-		go fetch(i, url, ch) // start a goroutine
+	for _, url := range os.Args[1:] {
+		go fetch(url, ch) // start a goroutine
 	}
+
+	waitForCancel()
+
 	for range os.Args[1:] {
 		fmt.Fprintln(stdout, <-ch) // receive from channel ch
 	}
 	fmt.Fprintf(stdout, "%.2fs elapsed\n", time.Since(start).Seconds())
 }
 
-func fetch(index int, url string, ch chan<- string) {
+func waitForCancel() {
+	c := make(chan os.Signal)
+	signal.Notify(c, os.Interrupt)
+	go func() {
+		for range c {
+			close(done)
+			return
+		}
+	}()
+}
+
+func fetch(url string, ch chan<- string) {
 	start := time.Now()
-	resp, err := http.Get(url)
+	req, err := http.NewRequest("GET", url, nil)
+	if err != nil {
+		ch <- fmt.Sprint(err)
+		return
+	}
+	req.Cancel = done
+	fmt.Println("requesting", url)
+	resp, err := http.DefaultClient.Do(req)
 	if err != nil {
 		ch <- fmt.Sprint(err) // send to channel ch
 		return
 	}
 
-	fileName := fileBase + strconv.Itoa(index) + fileExt
-
-	file, err := os.Create(fileName)
-	if err != nil {
-		ch <- fmt.Sprintf("Failed to create file. error: %v", err)
-		return
-	}
-	defer file.Close()
-
-	nbytes, err := io.Copy(file, resp.Body)
+	nbytes, err := io.Copy(ioutil.Discard, resp.Body)
 	resp.Body.Close() // don't leak resources
 	if err != nil {
 		ch <- fmt.Sprintf("while reading %s: %v", url, err)
