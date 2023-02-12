@@ -16,12 +16,10 @@ var stdout io.Writer = os.Stdout
 
 func main() {
 	if len(os.Args) > 1 && os.Args[1] == "web" {
-		//!+http
 		handler := func(w http.ResponseWriter, r *http.Request) {
 			draw(w)
 		}
 		http.HandleFunc("/", handler)
-		//!-http
 		log.Fatal(http.ListenAndServe("localhost:8000", nil))
 		return
 	}
