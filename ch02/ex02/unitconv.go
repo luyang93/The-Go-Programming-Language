@@ -3,7 +3,7 @@ package main
 import (
 	"bufio"
 	"fmt"
-	"gitlab.com/luyang93/The-Go-Programming-Language/ch02/tempconv"
+	"gitlab.com/luyang93/The-Go-Programming-Language/ch02/ex01"
 	"io"
 	"os"
 	"strconv"

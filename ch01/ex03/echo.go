@@ -1,5 +1,5 @@
 // Exercise 1.2 Test echo performance
-package main
+package echo
 
 import (
 	"fmt"
