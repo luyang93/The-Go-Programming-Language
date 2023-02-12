@@ -47,9 +47,7 @@ func surface(out io.Writer) {
 			cx, cy, cerr := corner(i, j+1)
 			dx, dy, derr := corner(i+1, j+1)
 			if aerr == nil && berr == nil && cerr == nil && derr == nil {
-				r, b := color(i, j)
-				fmt.Fprintf(out, "<polygon points='%g,%g %g,%g %g,%g %g,%g' fill=\"rgb(%d,0,%d)\"/>\n",
-					ax, ay, bx, by, cx, cy, dx, dy, r, b)
+				fmt.Fprintf(out, "<polygon points='%g,%g %g,%g %g,%g %g,%g'/>\n", ax, ay, bx, by, cx, cy, dx, dy)
 			}
 		}
 	}
@@ -57,8 +55,12 @@ func surface(out io.Writer) {
 }
 
 func corner(i, j int) (float64, float64, error) {
-	x, y, z := xyz(i, j)
+	// Find point (x,y) at corner of cell (i,j).
+	x := xyrange * (float64(i)/cells - 0.5)
+	y := xyrange * (float64(j)/cells - 0.5)
 
+	// Compute surface height z.
+	z := f(x, y)
 	if math.IsNaN(z) {
 		return 0, 0, fmt.Errorf("f(%g, %g) was NaN. corner(%d, %d)", x, y, i, j)
 	}
@@ -67,28 +69,6 @@ func corner(i, j int) (float64, float64, error) {
 	sx := width/2 + (x-y)*cos30*xyscale
 	sy := height/2 + (x+y)*sin30*xyscale - z*zscale
 	return sx, sy, nil
-}
-
-func color(i, j int) (int, int) {
-	_, _, z := xyz(i, j)
-	r, b := 0.0, 0.0
-	if !math.IsNaN(z) {
-		if z >= 0 {
-			r = 255 * z
-		} else {
-			b = 255 * math.Abs(z)
-		}
-	}
-	return int(r), int(b)
-}
-
-func xyz(i, j int) (float64, float64, float64) {
-	// Find point (x,y) at corner of cell (i,j).
-	x := xyrange * (float64(i)/cells - 0.5)
-	y := xyrange * (float64(j)/cells - 0.5)
-	z := f(x, y)
-
-	return x, y, z
 }
 
 func f(x, y float64) float64 {
