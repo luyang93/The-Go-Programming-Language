@@ -1,4 +1,6 @@
-package github
+// Package github provides a Go API for the GitHub issue tracker.
+// See https://developer.github.com/v3/search/#search-issues.
+package main
 
 import (
 	"encoding/json"
@@ -6,7 +8,30 @@ import (
 	"net/http"
 	"net/url"
 	"strings"
+	"time"
 )
+
+const IssuesURL = "https://api.github.com/search/issues"
+
+type User struct {
+	Login   string
+	HTMLURL string `json:"html_url"`
+}
+
+type Issue struct {
+	Number    int
+	HTMLURL   string `json:"html_url"`
+	Title     string
+	State     string
+	User      *User
+	CreatedAt time.Time `json:"created_at"`
+	Body      string    // in Markdown format
+}
+
+type IssuesSearchResult struct {
+	TotalCount int `json:"total_count"`
+	Items      []*Issue
+}
 
 // SearchIssues queries the GitHub issue tracker.
 func SearchIssues(terms []string) (*IssuesSearchResult, error) {
