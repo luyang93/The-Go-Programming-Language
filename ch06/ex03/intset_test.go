@@ -205,3 +205,94 @@ func TestIntSet_AddAll(t *testing.T) {
 		}
 	}
 }
+
+func TestIntSet_IntersectWith(t *testing.T) {
+	var tcs = []struct {
+		s       []int
+		t       []int
+		expects string
+	}{
+		{[]int{1}, []int{2, 3, 4}, "{}"},
+		{[]int{1, 2, 3}, []int{2, 3, 4}, "{2 3}"},
+		{[]int{1, 2, 3}, []int{2}, "{2}"},
+		{[]int{1, 2, 3, 4, 5, 6, 7, 8}, []int{8, 2}, "{2 8}"},
+	}
+
+	for _, tc := range tcs {
+		s := &IntSet{}
+		o := &IntSet{}
+		for _, i := range tc.s {
+			s.Add(i)
+		}
+		for _, i := range tc.t {
+			o.Add(i)
+		}
+
+		s.IntersectWith(o)
+
+		if s.String() != tc.expects {
+			t.Errorf("%v IntersectWith %v, Expects: %s, Actual: %s", tc.s, tc.t, tc.expects, s.String())
+		}
+	}
+}
+
+func TestIntSet_DifferenceWith(t *testing.T) {
+	var tcs = []struct {
+		s       []int
+		t       []int
+		expects string
+	}{
+		{[]int{1}, []int{2, 3, 4}, "{1}"},
+		{[]int{1, 2, 3}, []int{2, 3, 4}, "{1}"},
+		{[]int{1, 2, 3}, []int{1, 2, 3}, "{}"},
+		{[]int{1, 2, 3, 4, 5, 6, 7, 8}, []int{8, 2}, "{1 3 4 5 6 7}"},
+	}
+
+	for _, tc := range tcs {
+		s := &IntSet{}
+		o := &IntSet{}
+		for _, i := range tc.s {
+			s.Add(i)
+		}
+		for _, i := range tc.t {
+			o.Add(i)
+		}
+
+		s.DifferenceWith(o)
+
+		if s.String() != tc.expects {
+			t.Errorf("%v DifferenceWith %v, Expects: %s, Actual: %s", tc.s, tc.t, tc.expects, s.String())
+		}
+	}
+}
+
+func TestIntSet_SymmetricDifference(t *testing.T) {
+	var tcs = []struct {
+		s       []int
+		t       []int
+		expects string
+	}{
+		{[]int{1}, []int{2, 3, 4}, "{1 2 3 4}"},
+		{[]int{1, 2, 3}, []int{1, 2, 3}, "{}"},
+		{[]int{1, 2, 3}, []int{2}, "{1 3}"},
+		{[]int{1, 2, 3}, []int{2, 3, 4}, "{1 4}"},
+		{[]int{1, 2, 3, 4, 5, 6, 7, 8}, []int{8, 2, 9, 10}, "{1 3 4 5 6 7 9 10}"},
+	}
+
+	for _, tc := range tcs {
+		s := &IntSet{}
+		o := &IntSet{}
+		for _, i := range tc.s {
+			s.Add(i)
+		}
+		for _, i := range tc.t {
+			o.Add(i)
+		}
+
+		s.SymmetricDifference(o)
+
+		if s.String() != tc.expects {
+			t.Errorf("%v SymmetricDifference with %v, Expects: %s, Actual: %s", tc.s, tc.t, tc.expects, s.String())
+		}
+	}
+}

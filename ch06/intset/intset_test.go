@@ -30,8 +30,8 @@ func TestIntSet_Add(t *testing.T) {
 
 func TestIntSet_UnionWith(t *testing.T) {
 	var tcs = []struct {
-		x       []int
-		y       []int
+		s       []int
+		t       []int
 		expects string
 	}{
 		{[]int{}, []int{1}, "{1}"},
@@ -42,21 +42,22 @@ func TestIntSet_UnionWith(t *testing.T) {
 	}
 
 	for _, tc := range tcs {
-		var x, y IntSet
-		for _, w := range tc.x {
-			x.Add(w)
+		s := &IntSet{}
+		o := &IntSet{}
+		for _, i := range tc.s {
+			s.Add(i)
 		}
-		for _, w := range tc.y {
-			y.Add(w)
+		for _, i := range tc.t {
+			o.Add(i)
 		}
-		x.UnionWith(&y)
 
-		if x.String() != tc.expects {
-			t.Errorf("IntSet Add, Expect: %v, Actual: %v", tc.expects, x.String())
+		s.UnionWith(o)
+
+		if s.String() != tc.expects {
+			t.Errorf("IntSet Add, Expect: %v, Actual: %v", tc.expects, s.String())
 		}
 	}
 }
-
 func TestIntSet_Has(t *testing.T) {
 	var tcs = []struct {
 		words   []int
