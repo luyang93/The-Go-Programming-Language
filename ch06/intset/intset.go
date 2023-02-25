@@ -47,7 +47,7 @@ func (s *IntSet) String() string {
 			continue
 		}
 		for j := 0; j < 64; j++ {
-			if word&(1<<uint64(j)) != 0 {
+			if word&(1<<uint(j)) != 0 {
 				if buf.Len() > len("{") {
 					buf.WriteByte(' ')
 				}

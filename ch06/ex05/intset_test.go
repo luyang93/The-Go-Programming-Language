@@ -21,7 +21,7 @@ func TestIntSet_Add(t *testing.T) {
 		}
 
 		for i := 0; i < len(tc.expects); i++ {
-			if s.words[i] != uint64(tc.expects[i]) {
+			if s.words[i] != uint(tc.expects[i]) {
 				t.Errorf("IntSet Add, Expect: %v, Actual: %v", tc.expects, s)
 			}
 		}
@@ -152,7 +152,7 @@ func TestIntSet_Remove(t *testing.T) {
 func TestIntSet_Clear(t *testing.T) {
 	var tcs = []IntSet{
 		IntSet{},
-		IntSet{words: []uint64{1, 2, 3}},
+		IntSet{words: []uint{1, 2, 3}},
 	}
 
 	for _, tc := range tcs {
@@ -166,8 +166,8 @@ func TestIntSet_Clear(t *testing.T) {
 func TestIntSet_Copy(t *testing.T) {
 	var tcs = []IntSet{
 		IntSet{},
-		IntSet{words: []uint64{1, 2, 3, 4, 5, 6, 7, 8}},
-		IntSet{words: []uint64{1, 2, 1, 2, 1, 2, 1, 2}},
+		IntSet{words: []uint{1, 2, 3, 4, 5, 6, 7, 8}},
+		IntSet{words: []uint{1, 2, 1, 2, 1, 2, 1, 2}},
 	}
 
 	for _, tc := range tcs {
@@ -293,6 +293,27 @@ func TestIntSet_SymmetricDifference(t *testing.T) {
 
 		if s.String() != tc.expects {
 			t.Errorf("%v SymmetricDifference with %v, Expects: %s, Actual: %s", tc.s, tc.t, tc.expects, s.String())
+		}
+	}
+}
+
+func TestIntSet_Elems(t *testing.T) {
+	var tcs = [][]int{
+		[]int{},
+		[]int{1},
+		[]int{1, 2, 3},
+	}
+
+	for _, tc := range tcs {
+		s := new(IntSet)
+		for _, i := range tc {
+			s.Add(i)
+		}
+
+		for i, e := range s.Elems() {
+			if e != tc[i] {
+				t.Errorf("Expects: %v, Actual: %v", tc, e)
+			}
 		}
 	}
 }

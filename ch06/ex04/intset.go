@@ -87,7 +87,7 @@ func (s *IntSet) String() string {
 			continue
 		}
 		for j := 0; j < 64; j++ {
-			if word&(1<<uint64(j)) != 0 {
+			if word&(1<<uint(j)) != 0 {
 				if buf.Len() > len("{") {
 					buf.WriteByte(' ')
 				}
@@ -120,7 +120,7 @@ func (s *IntSet) Len() (l int) {
 
 // Remove x from the set
 func (s *IntSet) Remove(x int) {
-	word, bit := x/64, uint64(x%64)
+	word, bit := x/64, uint(x%64)
 	if len(s.words) == 0 || word > len(s.words) {
 		return
 	}
@@ -146,7 +146,7 @@ func (s *IntSet) Copy() *IntSet {
 func (s *IntSet) Elems() (elems []int) {
 	for i, word := range s.words {
 		for j := 0; j < 64 && word > 0; j++ {
-			if word&(1<<uint64(j)) != 0 {
+			if word&(1<<uint(j)) != 0 {
 				elems = append(elems, 64*i+j)
 			}
 		}

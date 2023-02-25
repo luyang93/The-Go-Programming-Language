@@ -7,11 +7,11 @@ import (
 func TestIntSet_Add(t *testing.T) {
 	var tcs = []struct {
 		words   []int
-		expects []uint64
+		expects []int
 	}{
-		{[]int{}, []uint64{}},
-		{[]int{1, 2, 101}, []uint64{6, 137438953472}},
-		{[]int{1, 2, 3, 4, 5, 6, 7, 8, 1024}, []uint64{510, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1}},
+		{[]int{}, []int{}},
+		{[]int{1, 2, 101}, []int{6, 137438953472}},
+		{[]int{1, 2, 3, 4, 5, 6, 7, 8, 1024}, []int{510, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1}},
 	}
 
 	for _, tc := range tcs {
@@ -21,7 +21,7 @@ func TestIntSet_Add(t *testing.T) {
 		}
 
 		for i := 0; i < len(tc.expects); i++ {
-			if s.words[i] != tc.expects[i] {
+			if s.words[i] != uint64(tc.expects[i]) {
 				t.Errorf("IntSet Add, Expect: %v, Actual: %v", tc.expects, s)
 			}
 		}
