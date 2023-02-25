@@ -8,7 +8,6 @@ import (
 
 // An IntSet is a set of small non-negative integers.
 // Its zero value represents the empty set.
-
 type IntSet struct {
 	words []uint64
 }
