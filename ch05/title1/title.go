@@ -2,7 +2,7 @@
 package main
 
 /*
-$ go build gitlab.com/luyang93/The-Go-Programming-Language/ch5/title1
+$ go build gitlab.com/luyang93/The-Go-Programming-Language/ch05/title1
 $ ./title1 http://gopl.io
 The Go Programming Language
 $ ./title1 https://golang.org/doc/effective_go.html

@@ -10,7 +10,7 @@ import (
 	"text/scanner"
 )
 
-// Lexer taken from gopl.io/ch5/eval
+// Lexer taken from gitlab.com/luyang93/The-Go-Programming-Language/ch05/eval
 type lexer struct {
 	scan  scanner.Scanner
 	token rune // current lookahead token

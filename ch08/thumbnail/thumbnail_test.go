@@ -1,5 +1,5 @@
 // This file is just a place to put example code from the book.
-// It does not actually run any code in gopl.io/ch8/thumbnail.
+// It does not actually run any code in gitlab.com/luyang93/The-Go-Programming-Language/ch08/thumbnail.
 
 package thumbnail_test
 

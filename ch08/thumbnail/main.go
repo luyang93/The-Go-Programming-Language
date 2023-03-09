@@ -10,7 +10,7 @@
 //
 // Run with:
 //
-//	$ go run $GOPATH/src/gopl.io/ch8/thumbnail/main.go
+//	$ go run $GOPATH/src/gitlab.com/luyang93/The-Go-Programming-Language/ch08/thumbnail/main.go
 //	foo.jpeg
 //	^D
 package main
