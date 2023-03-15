@@ -1,5 +1,5 @@
-// Package memo provides a concurrency-unsafe
-// memoization of a function of type Func.
+// Package memo provides a concurrency-safe memoization a function of
+// type Func.  Concurrent requests are serialized by a Mutex.
 package memo
 
 import "sync"
@@ -26,7 +26,6 @@ func New(f Func) *Memo {
 	}
 }
 
-// NOTE: not concurrency-safe!
 func (memo *Memo) Get(key string) (interface{}, error) {
 	memo.mu.Lock()
 	res, ok := memo.cache[key]

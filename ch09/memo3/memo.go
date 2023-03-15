@@ -1,5 +1,6 @@
-// Package memo provides a concurrency-unsafe
-// memoization of a function of type Func.
+// Package memo provides a concurrency-safe memoization a function of
+// type Func.  Requests for different keys run concurrently.
+// Concurrent requests for the same key result in duplicate work.
 package memo
 
 import "sync"
@@ -26,7 +27,6 @@ func New(f Func) *Memo {
 	}
 }
 
-// NOTE: not concurrency-safe!
 func (memo *Memo) Get(key string) (interface{}, error) {
 	memo.mu.Lock()
 	res, ok := memo.cache[key]
