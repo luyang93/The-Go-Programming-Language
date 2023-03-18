@@ -28,7 +28,7 @@ func TestPrettify(t *testing.T) {
 	}
 }
 
-func TestMain(t *testing.T) {
+func Test(t *testing.T) {
 	input := `
 <html>
 <body>

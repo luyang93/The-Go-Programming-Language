@@ -34,7 +34,7 @@ func TestFindLinks(t *testing.T) {
 	}
 }
 
-func TestMain(t *testing.T) {
+func Test(t *testing.T) {
 	source, _ := ioutil.ReadFile("golang.org.index.html")
 	stdin = bytes.NewBuffer(source)
 	stdout = new(bytes.Buffer)

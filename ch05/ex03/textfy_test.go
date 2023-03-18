@@ -6,7 +6,7 @@ import (
 	"testing"
 )
 
-func TestMain(t *testing.T) {
+func Test(t *testing.T) {
 	expects := "The Go Programming Language\n...\nThe Go Programming Language\nPackages\nPlay\nBuild version go1.8.1.\n"
 	source, _ := ioutil.ReadFile("golang.org.test.html")
 	stdin = bytes.NewBuffer(source)

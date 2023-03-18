@@ -30,7 +30,7 @@ func TestBreadthFirst(t *testing.T) {
 	}
 }
 
-func TestMain(t *testing.T) {
+func Test(t *testing.T) {
 	stdout = new(bytes.Buffer)
 	main()
 	actual := stdout.(*bytes.Buffer).String()

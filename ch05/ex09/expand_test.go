@@ -24,7 +24,7 @@ func TestExpand(t *testing.T) {
 	}
 }
 
-func TestMain(t *testing.T) {
+func Test(t *testing.T) {
 	tcs := []struct {
 		in      string
 		expects string
