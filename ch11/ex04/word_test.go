@@ -32,6 +32,7 @@ func TestIsPalindrome(t *testing.T) {
 		}
 	}
 }
+
 func BenchmarkIsPalindrome(b *testing.B) {
 	for i := 0; i < b.N; i++ {
 		IsPalindrome("A man, a plan, a canal: Panama")
@@ -56,6 +57,16 @@ func randomPalindrome(rng *rand.Rand) string {
 		runes[i] = r
 		runes[n-1-i] = r
 	}
+	m := rng.Intn(n + 1)
+	var temp []rune
+	temp = append(temp, runes[:m]...)
+	temp = append(temp, ' ') // Insert space
+	temp = append(temp, runes[m:]...)
+
+	m = rng.Intn(n + 1)
+	runes = append(make([]rune, 0), temp[:m]...)
+	runes = append(runes, ',') // Insert punctuation
+	runes = append(runes, temp[m:]...)
 	return string(runes)
 }
 
