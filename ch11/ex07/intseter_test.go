@@ -162,6 +162,15 @@ func BenchmarkMapIntSetString100(b *testing.B) {
 func BenchmarkMapIntSetString1000(b *testing.B) {
 	benchString(b, NewMapIntSet(), 1000)
 }
+func BenchmarkMapIntSetUnionWith10(b *testing.B) {
+	benchUnionWith(b, NewMapIntSet(), NewMapIntSet(), 10)
+}
+func BenchmarkMapIntSetUnionWith100(b *testing.B) {
+	benchUnionWith(b, NewMapIntSet(), NewMapIntSet(), 100)
+}
+func BenchmarkMapIntSetUnionWith1000(b *testing.B) {
+	benchUnionWith(b, NewMapIntSet(), NewMapIntSet(), 1000)
+}
 func BenchmarkBitIntSetAdd10(b *testing.B) {
 	benchAdd(b, NewBitIntSet(), 10)
 }
@@ -197,16 +206,6 @@ func BenchmarkBitIntSetString100(b *testing.B) {
 }
 func BenchmarkBitIntSetString1000(b *testing.B) {
 	benchString(b, NewBitIntSet(), 1000)
-}
-
-func BenchmarkMapIntSetUnionWith10(b *testing.B) {
-	benchUnionWith(b, NewMapIntSet(), NewMapIntSet(), 10)
-}
-func BenchmarkMapIntSetUnionWith100(b *testing.B) {
-	benchUnionWith(b, NewMapIntSet(), NewMapIntSet(), 100)
-}
-func BenchmarkMapIntSetUnionWith1000(b *testing.B) {
-	benchUnionWith(b, NewMapIntSet(), NewMapIntSet(), 1000)
 }
 func BenchmarkBitIntSetUnionWith10(b *testing.B) {
 	benchUnionWith(b, NewBitIntSet(), NewBitIntSet(), 10)
