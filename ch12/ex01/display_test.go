@@ -246,3 +246,25 @@ func Test(t *testing.T) {
 		// ...ad infinitum...
 	}
 }
+
+func TestMapKeys(t *testing.T) {
+	s := map[struct{ x int }]int{
+		{1}: 2,
+		{2}: 3,
+	}
+	Display("s", s)
+	// Output:
+	// Display s (map[struct { x int }]int):
+	// s[{x: 2}] = 3
+	// s[{x: 1}] = 2
+
+	a := map[[3]int]int{
+		{1, 2, 3}: 3,
+		{2, 3, 4}: 4,
+	}
+	Display("a", a)
+	// Output:
+	// Display a (map[[3]int]int):
+	// a[1, 2, 3] = 3
+	// a[2, 3, 4] = 4
+}
