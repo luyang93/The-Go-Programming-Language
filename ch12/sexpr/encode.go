@@ -22,7 +22,6 @@ func encode(buf *bytes.Buffer, v reflect.Value) error {
 	switch v.Kind() {
 	case reflect.Invalid:
 		buf.WriteString("nil")
-		return nil
 
 	case reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64:
 		if _, err := fmt.Fprintf(buf, "%d", v.Int()); err != nil {
@@ -53,7 +52,6 @@ func encode(buf *bytes.Buffer, v reflect.Value) error {
 			}
 		}
 		buf.WriteByte(')')
-		return nil
 
 	case reflect.Struct: // ((name value) ...)
 		buf.WriteByte('(')
@@ -70,7 +68,6 @@ func encode(buf *bytes.Buffer, v reflect.Value) error {
 			buf.WriteByte(')')
 		}
 		buf.WriteByte(')')
-		return nil
 
 	case reflect.Map: // ((key value) ...)
 		buf.WriteByte('(')
@@ -93,5 +90,6 @@ func encode(buf *bytes.Buffer, v reflect.Value) error {
 	default: // float, complex, bool, chan, func, interface
 		return fmt.Errorf("unsupported type: %s", v.Type())
 	}
+
 	return nil
 }
