@@ -1,5 +1,3 @@
-// See page 339.
-
 package sexpr
 
 import (
@@ -56,6 +54,10 @@ func encode(buf *bytes.Buffer, v reflect.Value) error {
 	case reflect.Struct: // ((name value) ...)
 		buf.WriteByte('(')
 		for i := 0; i < v.NumField(); i++ {
+			zero := reflect.Zero(v.Field(i).Type()).Interface()
+			if reflect.DeepEqual(v.Field(i).Interface(), zero) {
+				continue
+			}
 			if i > 0 {
 				buf.WriteByte(' ')
 			}
@@ -87,7 +89,24 @@ func encode(buf *bytes.Buffer, v reflect.Value) error {
 		}
 		buf.WriteByte(')')
 
-	default: // float, complex, bool, chan, func, interface
+	case reflect.Float32, reflect.Float64:
+		if _, err := fmt.Fprintf(buf, "%4.4f", v.Float()); err != nil {
+			return err
+		}
+
+	case reflect.Complex64, reflect.Complex128:
+		if _, err := fmt.Fprintf(buf, "#C(%4.4f %4.4f)", real(v.Complex()), imag(v.Complex())); err != nil {
+			return err
+		}
+
+	case reflect.Bool:
+		if v.Bool() {
+			buf.WriteByte('t')
+		} else {
+			buf.WriteString("nil")
+		}
+
+	default: // chan, func, interface
 		return fmt.Errorf("unsupported type: %s", v.Type())
 	}
 

@@ -21,14 +21,12 @@ func encode(buf *bytes.Buffer, v reflect.Value, indent int) error {
 	case reflect.Invalid:
 		buf.WriteString("null")
 
-	case reflect.Int, reflect.Int8, reflect.Int16,
-		reflect.Int32, reflect.Int64:
+	case reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64:
 		if _, err := fmt.Fprintf(buf, "%d", v.Int()); err != nil {
 			return err
 		}
 
-	case reflect.Uint, reflect.Uint8, reflect.Uint16,
-		reflect.Uint32, reflect.Uint64, reflect.Uintptr:
+	case reflect.Uint, reflect.Uint8, reflect.Uint16, reflect.Uint32, reflect.Uint64, reflect.Uintptr:
 		if _, err := fmt.Fprintf(buf, "%d", v.Uint()); err != nil {
 			return err
 		}
@@ -115,6 +113,7 @@ func encode(buf *bytes.Buffer, v reflect.Value, indent int) error {
 		} else {
 			buf.WriteString("false")
 		}
+
 	default: // chan, func, interface, complex
 		return fmt.Errorf("unsupported type: %s", v.Type())
 	}

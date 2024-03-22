@@ -1,5 +1,3 @@
-// See page 339.
-
 package sexpr
 
 import (
@@ -28,7 +26,7 @@ func encode(buf *bytes.Buffer, v reflect.Value) error {
 			return err
 		}
 
-	case reflect.Uint, reflect.Uint8, reflect.Uint16, reflect.Uint32, reflect.Uint64:
+	case reflect.Uint, reflect.Uint8, reflect.Uint16, reflect.Uint32, reflect.Uint64, reflect.Uintptr:
 		if _, err := fmt.Fprintf(buf, "%d", v.Uint()); err != nil {
 			return err
 		}
@@ -104,7 +102,7 @@ func encode(buf *bytes.Buffer, v reflect.Value) error {
 			buf.WriteString("nil")
 		}
 
-	default: // float, complex, bool, chan, func, interface
+	default: // chan, func, interface
 		return fmt.Errorf("unsupported type: %s", v.Type())
 	}
 
