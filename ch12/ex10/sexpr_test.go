@@ -2,6 +2,7 @@ package sexpr
 
 import (
 	"fmt"
+	"reflect"
 	"testing"
 )
 
@@ -49,12 +50,17 @@ func Test(t *testing.T) {
 	}
 	t.Logf("Marshal() = %s\n", data)
 
-	// Pretty-print it:
-	data, err = MarshalIndent(strangelove)
-	if err != nil {
-		t.Fatal(err)
+	// Decode it
+	var movie Movie
+	if err := Unmarshal(data, &movie); err != nil {
+		t.Fatalf("Unmarshal failed: %v", err)
 	}
-	t.Logf("MarshalIdent() = %s\n", data)
+	t.Logf("Unmarshal() = %+v\n", movie)
+
+	// Check equality.
+	if !reflect.DeepEqual(movie, strangelove) {
+		t.Fatal("not equal")
+	}
 }
 
 func TestFloat(t *testing.T) {
@@ -75,10 +81,10 @@ func TestFloat(t *testing.T) {
 			t.Fatalf("return err %v", err.Error())
 		}
 
-		if string(actual32) != fmt.Sprintf("%4.4f", tc.num32) {
+		if string(actual32) != fmt.Sprintf("%g", tc.num32) {
 			t.Errorf("Result = %v, Expected %v", actual32, tc.num32)
 		}
-		if string(actual64) != fmt.Sprintf("%4.4f", tc.num64) {
+		if string(actual64) != fmt.Sprintf("%g", tc.num64) {
 			t.Errorf("Result = %v, Expected %v", actual64, tc.num64)
 		}
 	}
@@ -102,10 +108,10 @@ func TestComplex(t *testing.T) {
 			t.Fatalf("return err %v", err.Error())
 		}
 
-		if string(actual64) != fmt.Sprintf("#C(%4.4f %4.4f)", real(tc.num64), imag(tc.num64)) {
+		if string(actual64) != fmt.Sprintf("#C(%g %g)", real(tc.num64), imag(tc.num64)) {
 			t.Errorf("Result = %s, Expected %v", actual64, tc.num64)
 		}
-		if string(actual128) != fmt.Sprintf("#C(%4.4f %4.4f)", real(tc.num128), imag(tc.num128)) {
+		if string(actual128) != fmt.Sprintf("#C(%g %g)", real(tc.num128), imag(tc.num128)) {
 			t.Errorf("Result = %s, Expected %v", actual128, tc.num128)
 		}
 	}
@@ -126,6 +132,76 @@ func TestBool(t *testing.T) {
 		}
 		if string(actual) != tc.want {
 			t.Errorf("Result = %s, Expected %v", actual, tc.want)
+		}
+	}
+}
+func TestMarshal(t *testing.T) {
+	type Interface interface{}
+	type Record struct {
+		B    bool
+		F32  float32
+		F64  float64
+		C64  complex64
+		C128 complex128
+		I    Interface
+	}
+	tcs := []struct {
+		r    Record
+		want string
+	}{
+		{
+			Record{true, 2.5, 0, 1 + 2i, 2 + 3i, Interface(5)},
+			`((B t) (F32 2.5) (F64 0) (C64 #C(1 2)) (C128 #C(2 3)) (I ("sexpr.Interface" 5)))`,
+		},
+		{
+			Record{false, 0, 1.5, 0, 1i, Interface(0)},
+			`((B nil) (F32 0) (F64 1.5) (C64 #C(0 0)) (C128 #C(0 1)) (I ("sexpr.Interface" 0)))`,
+		},
+	}
+	for _, tc := range tcs {
+		data, err := Marshal(tc.r)
+		s := string(data)
+		if err != nil {
+			t.Errorf("Marshal(%s): %s", s, err)
+		}
+		if s != tc.want {
+			t.Errorf("Marshal(%#v) got %s, wanted %s", tc.r, s, tc.want)
+		}
+	}
+}
+
+func TestUnmarshal(t *testing.T) {
+	type Interface interface{}
+	type Record struct {
+		B    bool
+		F32  float32
+		F64  float64
+		C64  complex64
+		C128 complex128
+		I    Interface
+	}
+	Interfaces["sexpr.Interface"] = reflect.TypeOf(int(0))
+	tcs := []struct {
+		s    string
+		want Record
+	}{
+		{
+			`((B t) (F32 2.5) (F64 0) (I ("sexpr.Interface" 5)))`,
+			Record{true, 2.5, 0, 0, 0, Interface(5)},
+		},
+		{
+			`((B nil) (F32 0) (F64 1.5) (I ("sexpr.Interface" 0)))`,
+			Record{false, 0, 1.5, 0, 0, Interface(0)},
+		},
+	}
+	for _, tc := range tcs {
+		var r Record
+		err := Unmarshal([]byte(tc.s), &r)
+		if err != nil {
+			t.Errorf("Unmarshal(%q): %s", tc.s, err)
+		}
+		if !reflect.DeepEqual(r, tc.want) {
+			t.Errorf("Unmarshal(%q) got %#v, wanted %#v", tc.s, r, tc.want)
 		}
 	}
 }

@@ -131,14 +131,14 @@ func readList(lex *lexer, v reflect.Value) {
 			lex.consume(')')
 		}
 	default:
-		panic(fmt.Sprintf("Cannot decode list into %v", v.Type()))
+		panic(fmt.Sprintf("cannot decode list into %v", v.Type()))
 	}
 }
 
 func endList(lex *lexer) bool {
 	switch lex.token {
 	case scanner.EOF:
-		panic("End of file")
+		panic("end of file")
 	case ')':
 		return true
 	default:

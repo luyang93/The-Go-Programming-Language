@@ -5,40 +5,13 @@ package sexpr
 import (
 	"bytes"
 	"fmt"
-	"io"
 	"reflect"
 	"strconv"
+	"strings"
 	"text/scanner"
 )
 
-type Decoder struct {
-	lex *lexer
-}
-
-func NewDecoder(r io.Reader) *Decoder {
-	scan := scanner.Scanner{Mode: scanner.GoTokens}
-	scan.Init(r)
-	return &Decoder{&lexer{scan: scan}}
-}
-
-func (d *Decoder) Decode(v interface{}) (err error) {
-	defer func() {
-		if r := recover(); r != nil {
-			err = fmt.Errorf("error occured %s: %v", d.lex.scan.Position, r)
-		}
-	}()
-
-	if d.lex.token == 0 {
-		d.lex.next()
-	}
-
-	read(d.lex, reflect.ValueOf(v).Elem())
-	return nil
-}
-
-func (d *Decoder) More() bool {
-	return d.lex.token != scanner.EOF
-}
+var Interfaces map[string]reflect.Type
 
 // Unmarshal parses S-expression data and populates the variable
 // whose address is in the non-nil pointer out.
@@ -100,9 +73,14 @@ func read(lex *lexer, v reflect.Value) {
 	switch lex.token {
 	case scanner.Ident:
 		// The only valid identifiers are
-		// "nil" and struct field names.
-		if lex.text() == "nil" {
+		// "nil", "t" and struct field names.
+		switch lex.text() {
+		case "nil":
 			v.Set(reflect.Zero(v.Type()))
+			lex.next()
+			return
+		case "t":
+			v.SetBool(true)
 			lex.next()
 			return
 		}
@@ -113,7 +91,25 @@ func read(lex *lexer, v reflect.Value) {
 		return
 	case scanner.Int:
 		i, _ := strconv.Atoi(lex.text()) // NOTE: ignoring errors
-		v.SetInt(int64(i))
+		switch v.Type().Kind() {
+		case reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64:
+			v.SetInt(int64(i))
+			lex.next()
+			return
+		case reflect.Uint, reflect.Uint8, reflect.Uint16, reflect.Uint32, reflect.Uint64:
+			v.SetUint(uint64(i))
+			lex.next()
+			return
+		case reflect.Float32, reflect.Float64:
+			v.SetFloat(float64(i))
+			lex.next()
+			return
+		default:
+			panic(fmt.Sprintf("unexpected token Int %q", lex.text()))
+		}
+	case scanner.Float:
+		f, _ := strconv.ParseFloat(lex.text(), 64) // NOTE: ignoring errors
+		v.SetFloat(f)
 		lex.next()
 		return
 	case '(':
@@ -160,6 +156,16 @@ func readList(lex *lexer, v reflect.Value) {
 			v.SetMapIndex(key, value)
 			lex.consume(')')
 		}
+	case reflect.Interface: // (name value)
+		name := strings.Trim(lex.text(), `"`)
+		lex.next()
+		typ, ok := Interfaces[name]
+		if !ok {
+			panic(fmt.Sprintf("no concrete type registered for interface %s", name))
+		}
+		val := reflect.New(typ)
+		read(lex, reflect.Indirect(val))
+		v.Set(reflect.Indirect(val))
 	default:
 		panic(fmt.Sprintf("cannot decode list into %v", v.Type()))
 	}
@@ -174,4 +180,8 @@ func endList(lex *lexer) bool {
 	default:
 		return false
 	}
+}
+
+func init() {
+	Interfaces = make(map[string]reflect.Type)
 }
