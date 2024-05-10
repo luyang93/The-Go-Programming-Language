@@ -15,7 +15,8 @@ func main() {
 
 	// equivalent to pb := &x.b
 	pb := (*int16)(unsafe.Pointer(
-		uintptr(unsafe.Pointer(&x)) + unsafe.Offsetof(x.b)))
+		uintptr(unsafe.Pointer(&x)) + unsafe.Offsetof(x.b)),
+	)
 	*pb = 42
 
 	/*
