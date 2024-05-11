@@ -27,4 +27,4 @@ int bz2compress(
     *outlen -= s->avail_out;
     s->next_in = s->next_out = NULL;
     return r;
-  }
+}
